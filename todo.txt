@@ -1,0 +1,2 @@
+[ADD] autoblacklist user if they exceed 100 commands in 60 seconds
+[ADD] autoblacklist guild if they exceed 10000 commands in 60 seconds
