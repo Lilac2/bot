@@ -90,7 +90,7 @@ lilac.on('message', async message => {
             if ((command.requiredPerms)) {
                 if (!message.member.hasPermission(command.requiredPerms)) {
                     message.channel.send({embed: {
-                        color: color.embedColors.error                                ,
+                        color: context.embedColors.error                                ,
                         title:       'Missing Permission'                             ,
                         description: `This command requires: ${command.requiredPerms}`
                     }})
@@ -171,7 +171,7 @@ lilac.on('guildDelete', guild => {
 lilac.on('error', error => {
     lilacServer.log('error', {embed: {
         title: 'error',
-        description: `\`\`\`${error}\`\`\``
+        description: `\`\`\`\n${error}\n\`\`\``
     }})
     callHooks('error', error)
 })

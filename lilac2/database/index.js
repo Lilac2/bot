@@ -4,9 +4,7 @@ const config = require('../config.js')
 /* initialize firestore */
 const admin = require('firebase-admin')
 admin.initializeApp({
-    credential: admin.credential.cert(
-        require('./key.js')
-    )
+    credential: admin.credential.cert(require('./key.js'))
 })
 const firestore = admin.firestore() 
 
@@ -14,6 +12,7 @@ const firestore = admin.firestore()
 
 module.exports = { 
     firestore: firestore,
+    admin: admin,
     
     /* methods for database relating to guilds */
     guild: {

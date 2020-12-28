@@ -266,7 +266,7 @@ module.exports = function (context) {
                         },
                         {
                             name: 'Github',
-                            value: '[Lilac\'s source here!](https://github.com/Lilac2)',
+                            value: '[Lilac\'s source here!](https://github.com/Lilac2/bot)',
                             inline: true
                         },
                         {
