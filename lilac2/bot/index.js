@@ -24,14 +24,15 @@ lilac.on('message', async message => {
     if (message.author.bot)                                                                  return   // ignore messages from bots 
     if (!message.guild)                                                                      return   // ignore messages in dms        
     if (lilac.user.presence.status === 'dnd' && !context.isUserDeveloper(message.author.id)) return   // ignore messages in dnd unless from bot developer
-    if (db.cache.blacklist.isUserBlacklisted(message.author.id))                             return   // ignores messages from blacklisted users
-    if (db.cache.blacklist.isGuildBlacklisted(message.guild.id)) { message.guild.leave();    return } // ignores messages from blacklisted guilds, and also leaves the guild
+    if (context.database.cache.blacklist.isUserBlacklisted(message.author.id))                             return   // ignores messages from blacklisted users
+    if (context.database.cache.blacklist.isGuildBlacklisted(message.guild.id)) { message.guild.leave();    return } // ignores messages from blacklisted guilds, and also leaves the guild
     
 
     /* get cache for guild, if it isn't stored in cache, update cache */
-    let guildCache  
-    if (!db.cache.guild.exists(message.guild.id)) await db.cache.guild.updateGuildCache(message.guild.id)
-    guildCache = db.cache.guild.fetch(message.guild.id)
+    let guildCache
+    if (!context.database.cache.guild.exists(message.guild.id)) await context.database.cache.guild.updateGuildCache(message.guild.id)
+    if (!context.database.cache.guild.exists(message.guild.id)) await context.database.guild.add(message.guild) // if still not in cache, add guild to database
+    guildCache = context.database.cache.guild.fetch(message.guild.id)
     
 
     /* if the bot is pinged, reply with this message including prefix for guild */
@@ -71,6 +72,8 @@ lilac.on('message', async message => {
 
 
         if (context.commands[commandName]) {
+            if (config.bot.setTyping === true) message.channel.startTyping()
+
             const command   = context.commands[commandName] ? context.commands[commandName] : context.commands[splitMessage[1]]
             let arguments
 
@@ -84,8 +87,8 @@ lilac.on('message', async message => {
             }
 
 
-            if (!db.cache.guild.isExtensionEnabled(message.guild.id, command.extensionFrom)) return // extension command is in disabled for guild, ignore
-            if (command.developerOnly && !context.isUserDeveloper(message.author.id))        return // command is developer only and user is not developer
+            if (!context.database.cache.guild.isExtensionEnabled(message.guild.id, command.extensionFrom)) return // extension command is in disabled for guild, ignore
+            if (command.developerOnly && !context.isUserDeveloper(message.author.id))                      return // command is developer only and user is not developer
             
             if ((command.requiredPerms)) {
                 if (!message.member.hasPermission(command.requiredPerms)) {
@@ -136,16 +139,18 @@ lilac.on('message', async message => {
             if (cooldown) context.commandCooldown[commandName][message.author.id] = command.cooldown // add user to command's cooldown if it has one
 
             command.callback(message, argumentObject) // call the commands callback
+            if (config.bot.setTyping === true) message.channel.stopTyping()
         } 
+        
     }
 
     callHooks('message', message)
 })
 
 lilac.on('guildCreate', guild => {
-    if (db.cache.blacklist.isGuildBlacklisted(guild.id)) { guild.leave(); return } // leave the server if the guild is blacklisted and don't add to database
+    if (context.database.cache.blacklist.isGuildBlacklisted(guild.id)) { guild.leave(); return } // leave the server if the guild is blacklisted and don't add to database
     
-    db.guild.add(guild)
+    context.database.guild.add(guild)
         .then(() => {
             lilacServer.logToStream({embed: {
                 color: context.embedColors.lilac,
@@ -158,7 +163,7 @@ lilac.on('guildCreate', guild => {
 })
 
 lilac.on('guildDelete', guild => {
-    db.guild.remove(guild.id)
+    context.database.guild.remove(guild.id)
         .then(() => {
             lilacServer.logToStream({embed: {
                 title: 'Left Server'
@@ -179,7 +184,7 @@ lilac.on('error', error => {
 lilac.on('ready', () => {
     /* initially build cache from database */
     console.log('Building cache from database...')
-    db.cache.updateEntireCache() 
+    context.database.cache.updateEntireCache() 
         .then(() => {
             console.log('Cache built!')
 

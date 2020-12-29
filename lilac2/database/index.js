@@ -93,7 +93,7 @@ module.exports = {
             _guilds: {},  // stores the guilds like {<guild-id>: guildDataObject}
             /* check if a guild is in the cache, true or false*/
             exists(id) {
-               this._guilds[id] ? true : false 
+                return this._guilds[id] ? true : false 
             },
             /* get a guild from the cache, returns object with data about the guild */
             fetch(id) {

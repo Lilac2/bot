@@ -11,7 +11,8 @@ module.exports = {
                 errorLog:  '788035398663536641'
             }
         },
-        owner: '525396913294671953'
+        owner: '525396913294671953',
+        setTyping: true
     }, 
     api: {
         port: 6969
