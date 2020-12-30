@@ -72,8 +72,6 @@ lilac.on('message', async message => {
 
 
         if (context.commands[commandName]) {
-            if (config.bot.setTyping === true) message.channel.startTyping()
-
             const command   = context.commands[commandName] ? context.commands[commandName] : context.commands[splitMessage[1]]
             let arguments
 
@@ -88,7 +86,16 @@ lilac.on('message', async message => {
 
 
             if (!context.database.cache.guild.isExtensionEnabled(message.guild.id, command.extensionFrom)) return // extension command is in disabled for guild, ignore
-            if (command.developerOnly && !context.isUserDeveloper(message.author.id))                      return // command is developer only and user is not developer
+
+            /* command is developer only and user is not developer */
+            if (command.developerOnly && !context.isUserDeveloper(message.author.id)) {
+                message.channel.send({embed: {
+                    color: context.embedColors.error,
+                    title: 'Developer Only',
+                    description: 'Sorry, this command is reserved for Lilac2 developers.'
+                }})
+                return
+            }
             
             if ((command.requiredPerms)) {
                 if (!message.member.hasPermission(command.requiredPerms)) {
@@ -138,8 +145,17 @@ lilac.on('message', async message => {
 
             if (cooldown) context.commandCooldown[commandName][message.author.id] = command.cooldown // add user to command's cooldown if it has one
 
-            command.callback(message, argumentObject) // call the commands callback
-            if (config.bot.setTyping === true) message.channel.stopTyping()
+            if (config.bot.setTyping === true) await message.channel.startTyping()
+
+            const possiblePromise = command.callback(message, argumentObject)
+            if (possiblePromise) {
+                possiblePromise.then(() => {
+                    if (config.bot.setTyping === true) message.channel.stopTyping()
+                })
+            } else {
+                if (config.bot.setTyping === true) message.channel.stopTyping()
+            }
+            
         } 
         
     }

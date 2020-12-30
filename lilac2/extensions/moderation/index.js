@@ -10,14 +10,14 @@ module.exports = function (context) {
             if (!context.cache.guild.isExtensionEnabled(guildId, 'moderation')) return
 
             const guild = await context.client.guilds.get(guildId)
-            const guildCache = moderationDatabase.cache._guilds[guildId]
+            const guildCache = await moderationDatabase.cache._guilds[guildId]
 
             guildCache.muted.forEach(async (mute, index) => {
                 mute.duration -= 1
                 if (mute.duration <= 0) {
                     const member = await guild.members.get(mute.id)
 
-                    await member.removeRole(await guild.roles.get(guildCache.muteRole))
+                    await member.removeRole(await guild.roles.get(guildCache.muteRole)).catch(err => console.log(err))
                     /*
                     mute.roles.forEach(async role => {
                         if (!await guild.roles.find(r => r.id === role.id)) return
@@ -25,30 +25,31 @@ module.exports = function (context) {
                     })
                     */
 
-                    moderationDatabase.cache._guilds[guildId].muted.splice(index, 1)
+                    await moderationDatabase.cache._guilds[guildId].muted.splice(index, 1)
                     await moderationDatabase.unmuteUser(guildId, index, guildCache.muted)
-                    await moderationDatabase.cache.updateCache(guildId)
+                    await moderationDatabase.cache.updateCache(guild.id)
                 }
             })
         }
 
     }, 60000)
 
-    context.client.setInterval(async () => {
+    context.client.setInterval(() => {
         for (const guildId in moderationDatabase.cache._guilds) {
             if (!context.cache.guild.isExtensionEnabled(guildId, 'moderation')) return
             const guildCache = moderationDatabase.cache._guilds[guildId]
     
             for (const mute of guildCache.muted) mute.duration -= 30
            
-            await context.database.firestore.collection('extensionStorage')
+            context.database.firestore.collection('extensionStorage')
                 .doc('moderation')
                 .collection('guilds')
                 .doc(guildId)
                 .update({
                     muted: guildCache.muted
+                }).then(() => { 
+                    moderationDatabase.cache.updateCache(guildId)
                 })
-            moderationDatabase.cache.updateCache(guildId)
         }
 
     }, 1800000) // 30 minutes = 1800000 ms

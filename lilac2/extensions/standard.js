@@ -9,40 +9,44 @@ module.exports = function (context) {
             callback: (message, arguments) => {
                 const guildId = message.guild.id
                 if (arguments.extension) {
-                    if (!context.extensions[arguments.extension]) { 
-                        message.channel.send({embed: {
-                            color: context.embedColors.error,
-                            title: 'Extension Not Found',
-                            description: `Sorry, I can't find an extension named "${arguments.extension}" so I can't give you the commands for it!`
-                        }})   
+                    if (!context.extensions[arguments.extension]) {
+                        message.channel.send({
+                            embed: {
+                                color: context.embedColors.error,
+                                title: 'Extension Not Found',
+                                description: `Sorry, I can't find an extension named "${arguments.extension}" so I can't give you the commands for it!`
+                            }
+                        })
                         return
                     }
-                    if (!context.cache.guild.isExtensionEnabled(guildId, arguments.extension)) { 
-                        message.channel.send({embed: {
-                            color: context.embedColors.error,
-                            title: 'Extension Not Enabled',
-                            description: 'If you would like to see the commands for this extension, please enable it using `toggle`.'
-                        }})
-                        return 
+                    if (!context.cache.guild.isExtensionEnabled(guildId, arguments.extension)) {
+                        message.channel.send({
+                            embed: {
+                                color: context.embedColors.error,
+                                title: 'Extension Not Enabled',
+                                description: 'If you would like to see the commands for this extension, please enable it using `toggle`.'
+                            }
+                        })
+                        return
                     }
-                }   
+                }
 
 
-                const usableCommands     = context.filterCommandsForMember(message.member)
+                const usableCommands = context.filterCommandsForMember(message.member)
                 const usableForExtension = usableCommands.filter(command => {
                     if (context.cache.guild.isExtensionEnabled(guildId, context.commands[command].extensionFrom)) {
                         if (arguments.extension) {
                             if (context.commands[command].extensionFrom === arguments.extension) return command
-                        } else { 
+                        } else {
                             return command
                         }
-                    } 
+                    }
                 })
                 usableForExtension.sort()
 
-                
+
                 const totalPages = Math.ceil(usableForExtension.length / 9)
-                function createEmbedFields(startingIndex=0) {
+                function createEmbedFields(startingIndex = 0) {
                     let columns = [
                         [],
                         [],
@@ -53,7 +57,7 @@ module.exports = function (context) {
                         if (columnToWorkOn > 2) break
                         if (columns[columnToWorkOn].length === 3) columnToWorkOn++
                         if (columns[2].length === 3) break
-                        
+
                         columns[columnToWorkOn].push(usableForExtension[index])
                     }
 
@@ -80,24 +84,26 @@ module.exports = function (context) {
                     return embedFields
                 }
 
-                message.channel.send({embed: {
-                    color: context.embedColors.lilac,
-                    title: arguments.extension ? `Commands [${arguments.extension}]` : 'Commands',
-                    fields: createEmbedFields(),
-                    footer: {
-                        text: totalPages > 1 ? `Page 1/${totalPages}` : '',
-                        icon_url: message.author.avatarURL
+                message.channel.send({
+                    embed: {
+                        color: context.embedColors.lilac,
+                        title: arguments.extension ? `Commands [${arguments.extension}]` : 'Commands',
+                        fields: createEmbedFields(),
+                        footer: {
+                            text: totalPages > 1 ? `Page 1/${totalPages}` : '',
+                            icon_url: message.author.avatarURL
+                        }
                     }
-                }}).then(msg => {
+                }).then(msg => {
                     if (usableForExtension.length > 9) msg.react('◀️').then(() => msg.react('▶️'))
 
                     const filter = (reaction, user) => ['◀️', '▶️'].includes(reaction.emoji.name) && user.id === message.author.id
-                    const collector = msg.createReactionCollector(filter, {time: 60000})
-                    
+                    const collector = msg.createReactionCollector(filter, { time: 60000 })
+
                     let index = 0
                     let page = 1
                     collector.on('collect', reaction => {
-                        reaction.remove(message.author.id)
+                        reaction.remove(message.author.id).catch(() => 0) // catch: bot cannot clear reaction because of missing permissions
 
                         if (reaction.emoji.name === '▶️') {
                             index += 9
@@ -109,21 +115,23 @@ module.exports = function (context) {
                             page--
                         }
 
-                        if (index >= usableForExtension.length) index = 0   , page = 1
+                        if (index >= usableForExtension.length) index = 0, page = 1
                         if (index < 0) index = usableForExtension.length - 5, page = totalPages
 
-                        msg.edit({embed: {
-                            color: context.embedColors.lilac,
-                            title: arguments.extension ? `Commands [${arguments.extension}]` : 'Commands',
-                            fields: createEmbedFields(index),
-                            footer: {
-                                text: `Page ${page}/${totalPages}`,
-                                icon_url: message.author.avatarURL
+                        msg.edit({
+                            embed: {
+                                color: context.embedColors.lilac,
+                                title: arguments.extension ? `Commands [${arguments.extension}]` : 'Commands',
+                                fields: createEmbedFields(index),
+                                footer: {
+                                    text: `Page ${page}/${totalPages}`,
+                                    icon_url: message.author.avatarURL
+                                }
                             }
-                        }})
+                        })
                     })
 
-                    collector.on('end', () => msg.clearReactions())
+                    collector.on('end', () => msg.clearReactions().catch(err => 0)) // catch: bot cannot clear reactions because of missing permissions
                 })
             }
         },
@@ -161,11 +169,13 @@ module.exports = function (context) {
 
                 context.database.guild.changePrefix(guildId, arguments.prefix).then(() => {
                     context.cache.guild.updateGuildCache(guildId).then(() => {
-                        message.channel.send({embed: {
-                            color: context.embedColors.success,
-                            title: 'Prefix updated!',
-                            description: `The prefix has been updated from \`${oldPrefix}\` to \`${arguments.prefix}\`!`
-                        }})
+                        message.channel.send({
+                            embed: {
+                                color: context.embedColors.success,
+                                title: 'Prefix updated!',
+                                description: `The prefix has been updated from \`${oldPrefix}\` to \`${arguments.prefix}\`!`
+                            }
+                        })
                     })
                 })
             }
@@ -235,11 +245,13 @@ module.exports = function (context) {
                         }
                     })
                 } else {
-                    await message.channel.send({embed: {
-                        color: context.embedColors.error,
-                        title: 'Extension Not Found',
-                        description: `Uh oh, looks like there's no extension named "${arguments.extension}". Sorry!`
-                    }})
+                    await message.channel.send({
+                        embed: {
+                            color: context.embedColors.error,
+                            title: 'Extension Not Found',
+                            description: `Uh oh, looks like there's no extension named "${arguments.extension}". Sorry!`
+                        }
+                    })
                 }
             }
         },
@@ -351,11 +363,13 @@ module.exports = function (context) {
                 let permString = ''
                 message.guild.me.permissions.toArray().forEach(perm => permString += `${perm}\n`)
 
-                message.channel.send({embed: {
-                    color: context.embedColors.lilac,
-                    title: `Lilac2's Permissions in ${message.guild.name}`,
-                    description: permString
-                }})
+                message.channel.send({
+                    embed: {
+                        color: context.embedColors.lilac,
+                        title: `Lilac2's Permissions in ${message.guild.name}`,
+                        description: permString
+                    }
+                })
             }
         },
         'inspect-command': {
@@ -375,7 +389,7 @@ module.exports = function (context) {
                 if (command.arguments) command.arguments.forEach(argument => {
                     argumentString += ` \`${argument}\``
                 })
-                
+
                 let usageArgumentString = ''
                 if (command.arguments) command.arguments.forEach(argument => {
                     usageArgumentString += ` <${argument}>`
@@ -393,7 +407,7 @@ module.exports = function (context) {
                         {
                             name: 'Min. Arguments',
                             value: command.minArgs || 0,
-                            inline: true 
+                            inline: true
                         },
                         {
                             name: 'Max. Arguments',
@@ -402,7 +416,7 @@ module.exports = function (context) {
                         },
                         {
                             name: 'Arguments',
-                            value: command.arguments ?  argumentString : 'N/A'
+                            value: command.arguments ? argumentString : 'N/A'
                         },
                         {
                             name: 'In Extension',
@@ -431,8 +445,48 @@ module.exports = function (context) {
                     ]
                 }
 
-                message.channel.send({embed: messageEmbed})
+                message.channel.send({ embed: messageEmbed })
+            }
+        }/*,
+        whois: {
+            description: 'Gives info about a user.',
+            minArgs: 1,
+            maxArgs: 1,
+            arguments: ['user'],
+            callback: (message, arguments) => {
+                let memberId = arguments['user']
+                if (message.mentions.channels.size > 0) memberId = message.mentions.members.first().id
+
+                const member = message.guild.member(context.client.fetchUser(memberId))
+
+                if (!member) {
+                    message.channel.send({
+                        embed: {
+                            color: context.embedColors.error,
+                            title: "Can't Find User",
+                            description: "Maybe my robot eyes don't work as good as they used to be, but I don't see that user here."
+                        }
+                    })
+                    return
+                }
+
+                message.channel.send({
+                    embed: {
+                        color: context.embedColors.lilac,
+                        title: member.displayName,
+                        thumbnail: {
+                            url: member.user.displayAvatarURL
+                        },
+                        fields: [
+                            {
+                                name: 'Joined Discord',
+                                value: member.user.createdTimestamp
+                            }
+                        ]
+                    }
+                })
             }
         }
+        */
     }
 }

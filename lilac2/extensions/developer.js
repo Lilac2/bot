@@ -66,14 +66,14 @@ module.exports = function (context) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`${result}\`\`\``
+                            description: `\`\`\`\n${result}\n\`\`\``
                         }
                     })
                 } catch (err) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`${err}\`\`\``
+                            description: `\`\`\`\n${err}\n\`\`\``
                         }
                     })
                 }
@@ -103,14 +103,14 @@ module.exports = function (context) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`${result}\`\`\``
+                            description: `\`\`\`\n${result}\n\`\`\``
                         }
                     })
                 } catch (err) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`${err}\`\`\``
+                            description: `\`\`\`\n${err}\n\`\`\``
                         }
                     })
                 }
