@@ -147,13 +147,17 @@ lilac.on('message', async message => {
 
             if (config.bot.setTyping === true) await message.channel.startTyping()
 
-            const possiblePromise = command.callback(message, argumentObject)
-            if (possiblePromise) {
-                possiblePromise.then(() => {
+            try {
+                const possiblePromise = command.callback(message, argumentObject)
+                if (possiblePromise) {
+                    possiblePromise.then(() => {
+                        if (config.bot.setTyping === true) message.channel.stopTyping()
+                    })
+                } else {
                     if (config.bot.setTyping === true) message.channel.stopTyping()
-                })
-            } else {
-                if (config.bot.setTyping === true) message.channel.stopTyping()
+                }
+            } catch(err) {
+                // TODO - thorough error logging
             }
             
         } 

@@ -269,6 +269,7 @@ module.exports = function (context) {
                 }
 
                 let messageEmbed = {
+                    color: context.embedColors.lilac,
                     title: 'About Lilac2',
                     thumbnail: { url: context.client.user.avatarURL },
                     fields: [
