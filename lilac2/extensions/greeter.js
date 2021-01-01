@@ -75,7 +75,7 @@ module.exports = function (context) {
                 embed: {
                     title: embedTitle,
                     description: embedDescription,
-                    thumbnail: { url: member.user.avatarURL }
+                    thumbnail: { url: member.user.displayAvatarURL }
                 }
             })
         }

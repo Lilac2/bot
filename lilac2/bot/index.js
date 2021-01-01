@@ -36,7 +36,7 @@ lilac.on('message', async message => {
     
 
     /* if the bot is pinged, reply with this message including prefix for guild */
-    if (message.isMemberMentioned(lilac.user)) {
+    if (message.isMentioned(lilac.user)) {
         message.channel.send({embed: {
             title: 'Hiya!',
             description: `Hey there, my prefix is \`${guildCache.prefix}\`! Try running \`${guildCache.prefix} help\`!`,
