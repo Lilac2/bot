@@ -2,6 +2,8 @@
 
 # Lilac2
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/371f24a74b4f4600badf6aa51a74534d)](https://app.codacy.com/gh/Lilac2/bot?utm_source=github.com&utm_medium=referral&utm_content=Lilac2/bot&utm_campaign=Badge_Grade)
+
 ## What is Lilac2?
 Lilac2 is a flexible and feature rich discord bot. The features per server can be customized via the toggling of Lilac2 **extensions**.
 
