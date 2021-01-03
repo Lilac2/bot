@@ -58,7 +58,7 @@ module.exports = function (context) {
 
         /* only send welcome message if there's a greeting channel set */
         if (greeterGuildCache.greetingChannel) {
-            function replacePlaceholders(string){
+            function replacePlaceholders(string) {
                 return string
                     .replace('[tag]', member.user.tag)
                     .replace('[username]', member.user.username)
