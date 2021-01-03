@@ -15,6 +15,7 @@ module.exports = function(context) {
             }
         },
         roll: {
+            hidden: true,
             description: 'Roll a dice. Rolls a single six sided die by default, but can accept an argument like 2d6 and such!',
             minArgs: 0,
             maxArgs: 1,

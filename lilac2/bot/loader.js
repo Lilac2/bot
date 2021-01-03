@@ -33,7 +33,8 @@ module.exports = context => {
             if (new RegExp("\\s+").test(extension.name))  throw 'extension name must not include any whitespace'
 
             context.extensions[extension.name] = {
-                description: extension.description
+                description: extension.description,
+                hidden: extension.hidden || false
             }
 
             if (extension.commands) {
@@ -41,9 +42,11 @@ module.exports = context => {
                     const description = extension.commands[command].description
                     if (!description || description === '' || typeof description !== 'string' ) throw `command "${command}" in must have description property that is a string 1 character or more`
                     if (context.commands[command])                                              throw `there is already a command under the name ${command}`
-
-                    context.commands[command]               = extension.commands[command]
-                    context.commands[command].extensionFrom = extension.name
+                    
+                    if (!command.disabled) {
+                        context.commands[command]               = extension.commands[command]
+                        context.commands[command].extensionFrom = extension.name
+                    }
                 }
             }
 

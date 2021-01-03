@@ -3,6 +3,7 @@ const vm = require('vm')
 module.exports = function (context) {
     this.name = 'developer'
     this.description = 'Tools for developers of Lilac2.'
+    this.hidden = true
 
     this.commands = {
         cache: {

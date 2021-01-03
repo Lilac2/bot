@@ -34,6 +34,7 @@ module.exports = function (context) {
 
                 const usableCommands = context.filterCommandsForMember(message.member)
                 const usableForExtension = usableCommands.filter(command => {
+                    if (context.commands[command].hidden) return 
                     if (context.cache.guild.isExtensionEnabled(guildId, context.commands[command].extensionFrom)) {
                         if (arguments.extension) {
                             if (context.commands[command].extensionFrom === arguments.extension) return command
@@ -72,13 +73,12 @@ module.exports = function (context) {
                                 })
                             }
                         })
-                        /*
-                        if (index !== 2) embedFields.push({
-                            name: '\u200b',
-                            value: '\u200b',
-                            inline: false
-                        })
-                        */
+                        
+                        // if (index !== 2) embedFields.push({
+                        //     name: '\u200b',
+                        //     value: '\u200b',
+                        //     inline: false
+                        // })
                     })
 
                     return embedFields
@@ -309,10 +309,14 @@ module.exports = function (context) {
 
                     if (context.cache.guild.isExtensionEnabled(message.guild.id, extension)) toggleStatus = '***enabled***'
 
-                    messageEmbed.fields.push({
-                        name: `**${extension}**: ${toggleStatus}`,
-                        value: extensionObject.description
-                    })
+                    console.log(extensionObject)
+
+                    if (!extensionObject.hidden) {
+                        messageEmbed.fields.push({
+                            name: `**${extension}**: ${toggleStatus}`,
+                            value: extensionObject.description
+                        })
+                    }
                 }
 
                 message.channel.send({ embed: messageEmbed })
