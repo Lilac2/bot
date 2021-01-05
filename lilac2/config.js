@@ -12,7 +12,7 @@ module.exports = {
             }
         },
         owner: '525396913294671953',
-        setTyping: true
+        setTyping: false
     }, 
     api: {
         port: 6969

@@ -309,8 +309,6 @@ module.exports = function (context) {
 
                     if (context.cache.guild.isExtensionEnabled(message.guild.id, extension)) toggleStatus = '***enabled***'
 
-                    console.log(extensionObject)
-
                     if (!extensionObject.hidden) {
                         messageEmbed.fields.push({
                             name: `**${extension}**: ${toggleStatus}`,
@@ -452,7 +450,7 @@ module.exports = function (context) {
 
                 message.channel.send({ embed: messageEmbed })
             }
-        }/*,
+        },
         whois: {
             description: 'Gives info about a user.',
             minArgs: 1,
@@ -460,9 +458,10 @@ module.exports = function (context) {
             arguments: ['user'],
             callback: (message, arguments) => {
                 let memberId = arguments['user']
-                if (message.mentions.channels.size > 0) memberId = message.mentions.members.first().id
+                if (message.mentions.channels.size > 0) memberId = message.mentions.members.first()
 
-                const member = message.guild.member(context.client.fetchUser(memberId))
+                const member = context.client.fetchUser(memberId)
+                console.log(memberId)
 
                 if (!member) {
                     message.channel.send({
@@ -491,7 +490,16 @@ module.exports = function (context) {
                     }
                 })
             }
+        },
+        suggestion: {
+            hidden: true,
+            description: 'Send a suggestion to the developers about Lilac2.',
+            minArgs: 1,
+            maxArgs: Infinity,
+            arguments: ['suggestion'],
+            callback: (message, arguments) => {
+                let suggestionContent = ''
+            }
         }
-        */
     }
 }

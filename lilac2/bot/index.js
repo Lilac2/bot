@@ -1,5 +1,6 @@
 const Discord = require('discord.js'),
       config  = require('../config.js')
+      os      = require('os')
 
 const lilac = new Discord.Client(),
       db    = require('../database/index.js')
@@ -220,6 +221,35 @@ lilac.on('ready', () => {
             console.log('Bot is ready and listening!')
             callHooks('ready') // call hooks for ready event
         })
+
+    /* changes presence every x seconds */
+    let presenceCount = 0
+    lilac.setInterval(() => {
+        const lilacPresences = [
+            {   
+                game: {
+                    type: 'WATCHING',
+                    name: `for pings!`
+                }
+            },
+            {
+                game: {
+                    type: 'LISTENING',
+                    name: `${lilac.guilds.size} servers!`
+                }
+            },
+            {
+                game: {
+                    type: 'PLAYING', 
+                    name: `with ${Math.round((os.totalmem() - os.freemem()) / 10000000)}/${Math.round(os.totalmem() / 10000000)}mb of ram!`
+                }
+            }
+        ]
+
+        if (presenceCount === lilacPresences.length) presenceCount = 0
+        lilac.user.setPresence(lilacPresences[presenceCount])
+        presenceCount++
+    }, 5000)
 })
 
 
