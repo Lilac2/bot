@@ -246,6 +246,8 @@ lilac.on('ready', () => {
         lilac.user.setPresence(lilacPresences[presenceCount])
         presenceCount++
     }, 5000)
+
+    lilac.setInterval(() => { context.uptime += 1}, 1000) // updates uptime every second
 })
 
 

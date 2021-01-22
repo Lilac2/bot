@@ -500,6 +500,29 @@ module.exports = function(context) {
             callback: (message, arguments) => {
                 let suggestionContent = ''
             }
+        },
+        uptime: {
+            description: "View the bot's uptime.",
+            callback: message => {
+                let formattedUptime = '',
+                    uptimeSeconds = context.uptime
+                
+                if (uptimeSeconds >= 3600) {
+                    formattedUptime += `${Math.round(uptimeSeconds / 3600)} hours `
+                    while (uptimeSeconds >= 3600) uptimeSeconds -= 3600
+                }
+                if (uptimeSeconds >= 60) {
+                    formattedUptime += `${Math.round(uptimeSeconds / 60)} minutes `
+                    while (uptimeSeconds >= 60) uptimeSeconds -= 60
+                }
+                if (uptimeSeconds >= 1) formattedUptime += `${Math.round(uptimeSeconds)} seconds`
+
+                message.channel.send({embed: {
+                    color: context.embedColors.lilac,
+                    title: 'Bot Uptime',
+                    description: formattedUptime
+                }})
+            }
         }
     }
 }

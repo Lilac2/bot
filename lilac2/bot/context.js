@@ -10,6 +10,7 @@ module.exports = (client, database, lilacServer) => {
         commandCooldown: {}         ,
         config:          config     ,
         apiInitiated:    false      ,
+        uptime:          0          ,
 
         cache: database.cache,
 
