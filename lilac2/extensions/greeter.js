@@ -1,4 +1,4 @@
-module.exports = function (context) {
+module.exports = function(context) {
     this.name = 'greeter'
     this.description = 'Greet new members!'
 
@@ -88,11 +88,13 @@ module.exports = function (context) {
             description: 'Set a greeting channel for the greeting module!',
             minArgs: 1,
             maxArgs: 1,
-            slowmode: 5000,
+            cooldown: 5000,
             requiredPerms: ['MANAGE_GUILD'],
             arguments: ['channel-id'],
             callback: async (message, arguments) => {
                 let channelId = arguments['channel-id']
+                if (message.mentions.channels.size > 0) channelId = message.mentions.channels.first().id
+
 
                 if (!message.guild.channels.get(channelId)) {
                     await message.channel.send('channel does not exist error')
@@ -128,7 +130,7 @@ module.exports = function (context) {
         },
         'disable-greeting': {
             description: 'Disable greeting for the bot.',
-            slowmode: 5000,
+            cooldown: 5000,
             requirePerms: ['MANAGE_GUILD'],
             callback: async message => {
                 if (!greeterCache.exists(message.guild.id)) {
@@ -155,7 +157,7 @@ module.exports = function (context) {
         },
         'set-greeting-title': {
             description: 'Set the greeting title for the bot! Use `<prefix> greeter-placeholders` for info on those!',
-            slowmode: 10000,
+            cooldown: 10000,
             requiredPerms: ['MANAGE_GUILD'],
             minArgs: 1,
             maxArgs: 1000,
@@ -195,7 +197,7 @@ module.exports = function (context) {
         },
         'set-greeting-description': {
             description: "Set the greeting description for the bot! Use `<prefix> greeter-placeholders` for info on those!",
-            slowmode: 10000,
+            cooldown: 10000,
             requiredPerms: ['MANAGE_GUILD'],
             minArgs: 1,
             maxArgs: 1000,

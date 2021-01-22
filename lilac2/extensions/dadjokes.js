@@ -1,4 +1,4 @@
-module.exports = function (context) {
+module.exports = function(context) {
     this.name = 'DadJokes'
     this.description = 'Who hates dad jokes??'
 
@@ -6,7 +6,7 @@ module.exports = function (context) {
         im: {
             description: 'Hello I\'m...',
             minArgs: 1,
-            maxArgs: 9999999e99999,
+            maxArgs: Infinity,
             arguments: ['name'],
             callback: (message, arguments) => {
                 var name = arguments.name

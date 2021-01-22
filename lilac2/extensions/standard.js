@@ -1,4 +1,4 @@
-module.exports = function (context) {
+module.exports = function(context) {
     this.name = 'standard'
     this.description = 'The standard commands for Lilac2.'
     this.commands = {
@@ -328,9 +328,8 @@ module.exports = function (context) {
             maxArgs: 1000,
             callback: (message, arguments) => {
                 let channelId = arguments['channel-id']
-                if (message.mentions.channels.size > 0) {
-                    channelId = message.mentions.channels.first().id
-                }
+                if (message.mentions.channels.size > 0) channelId = message.mentions.channels.first().id
+                
 
                 const channel = message.guild.channels.get(channelId)
 
@@ -400,6 +399,7 @@ module.exports = function (context) {
 
 
                 const messageEmbed = {
+                    color: context.embedColors.lilac,
                     title: `Command: ${arguments['command-name']}`,
                     description: `*${command.description}*`,
                     fields: [
@@ -428,7 +428,7 @@ module.exports = function (context) {
                         },
                         {
                             name: 'Requires Elevated Permissions?',
-                            value: command.permissions ? 'true' : false,
+                            value: command.requiredPerms ? 'true' : 'false',
                             inline: true
                         },
                         {

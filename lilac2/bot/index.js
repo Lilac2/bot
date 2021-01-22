@@ -5,10 +5,8 @@ const Discord = require('discord.js'),
 const lilac = new Discord.Client(),
       db    = require('../database/index.js')
 
-
 let lilacServer = require('./lilac_server.js')(lilac),
     context     = require('./context.js')(lilac, db, lilacServer)
-
 
 
 /* calls all the hooks for a given discord.js event type */
@@ -19,12 +17,11 @@ function callHooks(hookName, ...args) {
 }
 
 
-
 lilac.on('message', async message => {
     /* bot ignore message cases */
-    if (message.author.bot)                                                                  return   // ignore messages from bots 
-    if (!message.guild)                                                                      return   // ignore messages in dms        
-    if (lilac.user.presence.status === 'dnd' && !context.isUserDeveloper(message.author.id)) return   // ignore messages in dnd unless from bot developer
+    if (message.author.bot)                                                                                return   // ignore messages from bots 
+    if (!message.guild)                                                                                    return   // ignore messages in dms        
+    if (lilac.user.presence.status === 'dnd' && !context.isUserDeveloper(message.author.id))               return   // ignore messages in dnd unless from bot developer
     if (context.database.cache.blacklist.isUserBlacklisted(message.author.id))                             return   // ignores messages from blacklisted users
     if (context.database.cache.blacklist.isGuildBlacklisted(message.guild.id)) { message.guild.leave();    return } // ignores messages from blacklisted guilds, and also leaves the guild
     
@@ -58,13 +55,12 @@ lilac.on('message', async message => {
         
         if (commandName === '') commandName = splitMessage[1]
 
-
         const cooldown = context.commandCooldown[commandName] 
         if (cooldown) {
             if (cooldown[message.author.id]) {
                 message.channel.send({embed: {
-                    color:       context.embedColors.error                                     ,     
-                    title:       "You're still on cooldown for this command!"                  ,
+                    color:       context.embedColors.error,     
+                    title:       "You're still on cooldown for this command!",
                     description: `**${cooldown[message.author.id] / 1000} seconds** remaining.`
                 }})
                 return 
@@ -73,7 +69,7 @@ lilac.on('message', async message => {
 
 
         if (context.commands[commandName]) {
-            const command   = context.commands[commandName] ? context.commands[commandName] : context.commands[splitMessage[1]]
+            const command = context.commands[commandName] ? context.commands[commandName] : context.commands[splitMessage[1]]
             let arguments
 
             /* this mysterious tidbit of code works when it technically it shouldn't? */
@@ -101,8 +97,8 @@ lilac.on('message', async message => {
             if ((command.requiredPerms)) {
                 if (!message.member.hasPermission(command.requiredPerms)) {
                     message.channel.send({embed: {
-                        color: context.embedColors.error                                ,
-                        title:       'Missing Permission'                             ,
+                        color:       context.embedColors.error,
+                        title:       'Missing Permission',
                         description: `This command requires: ${command.requiredPerms}`
                     }})
                     return

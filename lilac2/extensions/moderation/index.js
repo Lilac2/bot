@@ -108,7 +108,7 @@ module.exports = function (context) {
             minArgs: 1,
             maxArgs: 2,
             cooldown: 5000,
-            arguments: ['user', '?time'],
+            arguments: ['user', '?time=5m'],
             callback: async (message, arguments) => {
                 /* NOTE: DURATION IS STORED AS MINUTES */
                 if (!moderationDatabase.cache.exists(message.guild.id)) {
@@ -155,8 +155,8 @@ module.exports = function (context) {
                 }
 
                 let duration = 5
-                if (arguments['?time']) {
-                    const timeString = arguments['?time']
+                if (arguments['?time=5m']) {
+                    const timeString = arguments['?time=5m']
                     const splitTimeString = timeString.split('')
                     const durationTime = splitTimeString.slice(0, -1).join('')
 
@@ -175,7 +175,7 @@ module.exports = function (context) {
                                 await message.channel.send({embed: {
                                     color: context.embedColors.error,
                                     title: 'Invalid Time',
-                                    description: `Looks like the argument for time, "${arguments['?time']}", is invalid. Valid times would include things like: **10m**, **2h**, or **1d**.`
+                                    description: `Looks like the argument for time, "${arguments['?time=5m']}", is invalid. Valid times would include things like: **10m**, **2h**, or **1d**.`
                                 }})
                                 return
                         }
@@ -192,7 +192,7 @@ module.exports = function (context) {
                         await message.channel.send({embed: {
                             color: context.embedColors.error,
                             title: 'Invalid Time',
-                            description: `Looks like the argument for time, "${arguments['?time']}", is invalid. Valid times would include things like: **10m**, **2h**, or **1d**.`
+                            description: `Looks like the argument for time, "${arguments['?time=5m']}", is invalid. Valid times would include things like: **10m**, **2h**, or **1d**.`
                         }})
                         return
                     }

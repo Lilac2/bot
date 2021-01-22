@@ -1,6 +1,7 @@
-const vm = require('vm')
+const vm =   require('vm'),
+      util = require('util')
 
-module.exports = function (context) {
+module.exports = function(context) {
     this.name = 'developer'
     this.description = 'Tools for developers of Lilac2.'
     this.hidden = true
@@ -24,7 +25,7 @@ module.exports = function (context) {
             description: 'Toggles whether the bot is in developer mode, where it ignores messages from non-developers.',
             developerOnly: true,
             callback: message => {
-                embed = {
+                let embed = {
                     title: "Toggled Dev Mode",
                     description: null
                 }
@@ -67,14 +68,14 @@ module.exports = function (context) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`\n${result}\n\`\`\``
+                            description: `\`\`\`js\n${result}\n\`\`\``
                         }
                     })
                 } catch (err) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`\n${err}\n\`\`\``
+                            description: `\`\`\`js\n${err}\n\`\`\``
                         }
                     })
                 }
@@ -104,14 +105,14 @@ module.exports = function (context) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`\n${result}\n\`\`\``
+                            description: `\`\`\`js\n${result}\n\`\`\``
                         }
                     })
                 } catch (err) {
                     message.channel.send({
                         embed: {
                             title: 'Eval Result',
-                            description: `\`\`\`\n${err}\n\`\`\``
+                            description: `\`\`\`js\n${err}\n\`\`\``
                         }
                     })
                 }
